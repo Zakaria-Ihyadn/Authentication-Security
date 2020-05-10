@@ -1,0 +1,27 @@
+
+body {
+  /* background-color: #E8ECEF; */
+  background-color: #F5F7FA;
+}
+
+.centered {
+    padding-top: 170px;
+    text-align: center;
+}
+
+.secret-text {
+  text-align: center;
+  font-size: 2rem;
+  color: #fff;
+  background-color: #000;
+}
+
+.zak-cont{
+  width: 80%;
+  margin: auto;
+  box-shadow: 10px 5px 13px 0px #AAB2BD,
+              0 0 0 0 #AAB2BD,
+              inset -5px -7px 10px #AAB2BD;
+  padding: 30px 0;
+  border-radius: 10px;
+}
