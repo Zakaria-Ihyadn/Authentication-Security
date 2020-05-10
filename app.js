@@ -1,9 +1,14 @@
 //jshint esversion:6
-require('dotenv').config();
+// require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-var encrypt = require('mongoose-encryption');
+// const encrypt = require('mongoose-encryption'); Level 2
+// const md5 = require('md5'); Level 3
+const bcrypt = require('bcryptjs'); // Level 4
+const saltRounds = 10;
+
+
 
 const app = express();
 
@@ -20,9 +25,9 @@ const userSchema = new mongoose.Schema({
     password: String
 });
 
-
+/* Using encrypting level 2*/ 
 // const secret = "ThisistheencryptionIUse.";
-userSchema.plugin(encrypt, { secret: process.env.SECRET ,encryptedFields: ["password"] });
+// userSchema.plugin(encrypt, { secret: process.env.SECRET ,encryptedFields: ["password"] });
 
 const User = new mongoose.model("User", userSchema);
 
@@ -36,12 +41,13 @@ app.route("/register")
     res.render("register");
 })
 .post(function(req, res){
-    const newUser = new User({
-        email : req.body.username,
-        password : req.body.password
-    });
 
-    newUser.save(function(err){
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash){
+        const newUser = new User({
+            email : req.body.username,
+            password : hash
+        });
+        newUser.save(function(err){
         if(err){
             console.log(err);
         }else{
@@ -49,6 +55,10 @@ app.route("/register")
             console.log("New user has been successffuly added");
         }
     });
+    });
+    
+
+    
     
 });
 
@@ -62,10 +72,11 @@ app.route("/login")
             console.log(err);
         }else{
             if(foundUser){
-                if(foundUser.password == req.body.password){
-                    res.render("secrets");
-                    console.log("User Login successfully");
-                }
+                bcrypt.compare(req.body.password, foundUser.password /*Hash*/, function(err, result){
+                    if(result === true){
+                        res.render("secrets");
+                    }
+                })
             }
             
         }
